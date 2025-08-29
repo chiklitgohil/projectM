@@ -1,0 +1,45 @@
+from flask import Flask, request, jsonify, render_template
+import os
+
+app = Flask(__name__)
+
+# route to serve the homepage (your HTML file)
+@app.route('/')
+def home():
+    return render_template('index.html')   # this will load index.html from templates/
+
+# API route to handle form submission
+@app.route('/report', methods=['POST'])
+def report():
+    issue_type = request.form.get("issue")
+    photo = request.files.get("photo")
+
+    # Save the uploaded photo if any
+    if photo:
+        photo_path = os.path.join("uploads", photo.filename)
+        photo.save(photo_path)
+    else:
+        photo_path = None
+
+    # Example: Give points depending on issue type
+    points = 0
+    if issue_type == "cutting":
+        points = 50
+    elif issue_type == "dumping":
+        points = 30
+    elif issue_type == "pollution":
+        points = 20
+    elif issue_type == "illegal":
+        points = 40
+
+    return jsonify({
+        "message": "Report received successfully!",
+        "issue": issue_type,
+        "photo_saved": bool(photo),
+        "points_awarded": points
+    })
+
+
+if __name__ == '__main__':
+    os.makedirs("uploads", exist_ok=True)
+    app.run(debug=True)
