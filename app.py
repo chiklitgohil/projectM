@@ -22,6 +22,10 @@ db = firestore.client()
 # Landing page
 @app.route('/')
 def home():
+    return render_template('home.html')
+
+@app.route('/user')
+def user():
     return render_template('index.html')
 
 # User report page
@@ -32,7 +36,9 @@ def report_page():
 # Admin dashboard page
 @app.route('/admin')
 def admin_page():
-    return render_template('admin.html')
+    return render_template('dashboard.html')
+
+
 
 
 

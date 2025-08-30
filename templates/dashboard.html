@@ -1,191 +1,328 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8" />
   <title>Authority Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Leaflet CSS (CRITICAL) -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
   <style>
+    :root{
+      --bg: #0d0d0d;
+      --card: #161616;
+      --accent: #00ffcc;
+      --muted: #bfbfbf;
+    }
     body {
       margin: 0;
       font-family: "Poppins", sans-serif;
-      background: #0d0d0d;
+      background: var(--bg);
       color: #f0f0f0;
       display: flex;
       flex-direction: column;
-      height: 100vh;
+      min-height: 100vh;
     }
 
     header {
-      padding: 20px;
+      padding: 14px 16px;
       text-align: center;
-      background: linear-gradient(90deg, #111, #222);
-      font-size: 28px;
-      font-weight: 600;
-      letter-spacing: 2px;
-      color:  #00ffcc;
-      text-shadow: 0 0 10px #00ffcc;
+      background: linear-gradient(90deg, #0f0f0f, #1a1a1a);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--accent);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
     }
 
-    .report-section {
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
-    }
-
-    .filters {
+    .content {
+      padding: 12px;
       display: flex;
-      gap: 10px;
-      margin-bottom: 15px;
+      flex-direction: column;
+      gap: 12px;
     }
 
-    select {
-      padding: 8px 12px;
-      background: #1e1e1e;
-      color: #00ffcc;
-      border: 1px solid #333;
-      border-radius: 6px;
-      font-size: 14px;
+    /* Report cards column */
+    .report-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-      margin-top: 10px;
-    }
-
-    th, td {
-      padding: 10px;
-      text-align: left;
-      border-bottom: 1px solid #333;
-    }
-
-    th {
-      background: #222;
-      color: #ffcc00;
-      text-transform: uppercase;
-      font-weight: 500;
-    }
-
-    tr:hover {
-      background: #1a1a1a;
-    }
-
-    .unresolved {
-      background-color: #330000; /* dark red */
-      color: #ff6666;
-    }
-
-    button {
-      padding: 6px 10px;
-      background: #00ffcc;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 600;
-      color: #000;
-      margin-right: 5px;
-    }
-
-    button:hover {
-      background: #ffcc00;
-      color: #111;
-    }
-
-    #map {
-      height: 300px;
-      margin-top: 20px;
+    .report-card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.03);
+      padding: 12px;
       border-radius: 12px;
-      border: 1px solid #333;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+    }
+
+    .report-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .report-header .left {
+      display:flex;
+      flex-direction: column;
+    }
+
+    .report-meta {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .report-id {
+      font-weight: 700;
+      color: #fff;
+      font-size: 15px;
+    }
+
+    .credit-pill {
+      background: rgba(0,255,204,0.08);
+      border: 1px solid rgba(0,255,204,0.18);
+      color: var(--accent);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .report-details {
+      font-size: 14px;
+      color: #e6e6e6;
+      line-height: 1.4;
+    }
+
+    .status {
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 8px;
+      display: inline-block;
+      margin-top: 6px;
+    }
+    .status.pending { background: rgba(255,102,102,0.08); color: #ff6666; }
+    .status.resolved { background: rgba(0,255,204,0.08); color: var(--accent); }
+
+    .actions {
+      display:flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn.resolve { background: linear-gradient(90deg,#00ffcc,#00d4ff); color:#062123; }
+    .btn.credit  { background: linear-gradient(90deg,#ffd24d,#ff9f00); color:#111; }
+
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Map block */
+    #map {
+      height: 340px;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.04);
+      margin-top: 6px;
+    }
+
+    /* Responsive: on narrow screens keep single column */
+    @media (min-width: 880px) {
+      .layout-wide {
+        display: grid;
+        grid-template-columns: 1fr 420px;
+        gap: 14px;
+        align-items: start;
+      }
+      .report-list {
+        max-height: calc(100vh - 180px);
+        overflow-y: auto;
+        padding-right: 6px;
+      }
+    }
+
+    @media (max-width: 879px) {
+      #map { height: 300px; }
     }
   </style>
 </head>
 <body>
-  <a href="{{ url_for('home') }}">Back to Home</a>
 
-  <header>Authority Dashboard</header>
-  <div class="report-section">
-    <div class="filters">
-      <select id="issueFilter">
-        <option value="">Filter by Issue</option>
-        <option value="cutting">Cutting</option>
-        <option value="dumping">Dumping</option>
-        <option value="pollution">Pollution</option>
-        <option value="illegal">Illegal</option>
-      </select>
-      <select id="statusFilter">
-        <option value="">Filter by Status</option>
-        <option value="pending">Pending</option>
-        <option value="resolved">Resolved</option>
-      </select>
+  <header>Authority Dashboard — Mangrove Guardian</header>
+
+  <div class="content">
+    <!-- layout container: left = report list, right = map -->
+    <div class="layout-wide">
+      <!-- left: cards -->
+      <div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <div style="font-weight:700; color:#fff;">Recent Reports</div>
+          <div style="font-size:13px; color: #bdbdbd;">Auto-refresh every 5s</div>
+        </div>
+
+        <div class="report-list" id="reportList">
+          <!-- cards dynamically inserted here -->
+        </div>
+      </div>
+
+      <!-- right: map -->
+      <div>
+        <div style="font-weight:700; color:#fff; margin-bottom:8px;">Map View</div>
+        <div id="map"></div>
+      </div>
     </div>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Issue</th>
-          <th>Location</th>
-          <th>Date/Time</th>
-          <th>Status</th>
-          <th>Credit</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="reportTable">
-        <tr class="unresolved">
-          <td>Cutting</td>
-          <td>23.03, 72.58</td>
-          <td>2025-08-30 14:32</td>
-          <td>Pending</td>
-          <td>No</td>
-          <td>
-            <button onclick="markResolved(this)">Resolve</button>
-            <button onclick="issueCredit(this)">Issue Credit</button>
-          </td>
-        </tr>
-        <tr>
-          <td>Dumping</td>
-          <td>19.07, 72.87</td>
-          <td>2025-08-29 11:12</td>
-          <td>Resolved</td>
-          <td>Yes</td>
-          <td>
-            <button disabled>Resolve</button>
-            <button disabled>Credit</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <!-- Map below the table -->
-    <div id="map"></div>
   </div>
 
+  <!-- Leaflet JS (load before our script) -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
   <script>
-    // Initialize map
-    const map = L.map('map').setView([20.5937, 78.9629], 5);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap'
-    }).addTo(map);
+    // ---------- Demo data store (replace with backend fetch calls) ----------
+    // For now we keep an in-memory array to demo UI behavior.
+    // In real app, call /get_reports to fetch data from Flask.
+    let reports = [
+      {
+        id: 101,
+        reporter_id: "R-101",
+        credits: 12,
+        issue: "Cutting",
+        lat: 23.03,
+        lon: 72.58,
+        datetime: "2025-08-30 14:32",
+        status: "Pending",
+        photo: null
+      },
+      {
+        id: 102,
+        reporter_id: "R-102",
+        credits: 70,
+        issue: "Dumping",
+        lat: 19.07,
+        lon: 72.87,
+        datetime: "2025-08-29 11:12",
+        status: "Resolved",
+        photo: null
+      }
+    ];
 
-    // Example markers
-    L.marker([23.03, 72.58]).addTo(map).bindPopup("Cutting reported here");
-    L.marker([19.07, 72.87]).addTo(map).bindPopup("Dumping reported here");
+    // ---------- Initialize map after DOM loaded ----------
+    let map, markersLayer;
+    document.addEventListener('DOMContentLoaded', () => {
+      map = L.map('map').setView([20.5937, 78.9629], 5);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
 
-    // Functions for buttons
-    function markResolved(button) {
-      const row = button.parentNode.parentNode;
-      row.cells[3].textContent = "Resolved"; // Status
-      row.classList.remove("unresolved");
-      button.disabled = true;
+      // layer group for markers so we can clear easily
+      markersLayer = L.layerGroup().addTo(map);
+
+      renderReports();           // render UI cards and markers
+      // After layout settles, force leaflet to recalc size
+      setTimeout(()=> map.invalidateSize(), 200);
+      // Start auto-refresh (demo: re-render from the same array)
+      setInterval(fetchAndRender, 5000);
+    });
+
+    // ---------- Render report cards & markers ----------
+    function renderReports() {
+      const list = document.getElementById('reportList');
+      list.innerHTML = '';           // clear current cards
+      markersLayer.clearLayers();    // clear map markers
+
+      reports.forEach((r, idx) => {
+        // card
+        const card = document.createElement('div');
+        card.className = 'report-card';
+        if (r.status !== 'Resolved') card.querySelector?.classList?.add?.('unresolved'); // no-op safe
+
+        const header = document.createElement('div');
+        header.className = 'report-header';
+        header.innerHTML = `
+          <div class="left">
+            <div class="report-id">Reporter: <span style="color:#fff">${r.reporter_id}</span></div>
+            <div class="report-meta">ID#${r.id} • ${r.datetime}</div>
+          </div>
+          <div class="credit-pill">Credits: <span id="credit-${r.reporter_id}">${r.credits}</span></div>
+        `;
+
+        const details = document.createElement('div');
+        details.className = 'report-details';
+        details.innerHTML = `
+          <div><strong>Issue:</strong> ${escapeHtml(r.issue)}</div>
+          <div><strong>Location:</strong> ${r.lat.toFixed(5)}, ${r.lon.toFixed(5)}</div>
+          <div><strong>Status:</strong> <span class="status ${r.status === 'Resolved' ? 'resolved' : 'pending'}">${r.status}</span></div>
+        `;
+
+        const actions = document.createElement('div');
+        actions.className = 'actions';
+        const resolveBtn = document.createElement('button');
+        resolveBtn.className = 'btn resolve';
+        resolveBtn.textContent = 'Resolve';
+        resolveBtn.disabled = (r.status === 'Resolved');
+        resolveBtn.onclick = () => handleResolve(idx, resolveBtn);
+
+        const creditBtn = document.createElement('button');
+        creditBtn.className = 'btn credit';
+        creditBtn.textContent = 'Issue Credit';
+        creditBtn.disabled = (r.credited === true || r.status !== 'Resolved');
+        creditBtn.onclick = () => handleIssueCredit(idx, creditBtn);
+
+        actions.appendChild(resolveBtn);
+        actions.appendChild(creditBtn);
+
+        card.appendChild(header);
+        card.appendChild(details);
+        card.appendChild(actions);
+
+        list.appendChild(card);
+
+        // marker
+        const m = L.marker([r.lat, r.lon]).addTo(markersLayer)
+          .bindPopup(`<b>${escapeHtml(r.issue)}</b><br/>Reporter: ${escapeHtml(r.reporter_id)}<br/>${escapeHtml(r.datetime)}`);
+      });
     }
 
-    function issueCredit(button) {
-      const row = button.parentNode.parentNode;
-      row.cells[4].textContent = "Yes"; // Credit
-      button.disabled = true;
+    // ---------- Simulated fetch (replace this with a real backend call) ----------
+    function fetchAndRender() {
+      // In real integration, replace with:
+      // fetch('/get_reports').then(r=>r.json()).then(data => { reports = data; renderReports(); });
+      // Here we just re-render same array (demo) and ensure map size ok.
+      renderReports();
+      setTimeout(()=> map.invalidateSize(), 150);
+    }
+
+    // ---------- Actions (resolve / credit) ----------
+    function handleResolve(index, btn) {
+      reports[index].status = 'Resolved';
+      btn.disabled = true;
+      // enable credit button if needed (we re-render)
+      renderReports();
+      // TODO: call backend: fetch('/update_report', {method:'POST', body: ...})
+    }
+
+    function handleIssueCredit(index, btn) {
+      // Example: increment reporter credits by 10
+      reports[index].credits = (reports[index].credits || 0) + 10;
+      reports[index].credited = true;
+      btn.disabled = true;
+      renderReports();
+      // TODO: call backend to persist credit issuance and notify reporter
+    }
+
+    // ---------- utility ----------
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, function(m){ return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]); });
     }
   </script>
 </body>
