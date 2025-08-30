@@ -1,0 +1,56 @@
+<form
+  id="reportForm"
+  action="/submit"
+  method="post"
+  enctype="multipart/form-data"
+  class="card p-4 shadow-sm"
+>
+  <div class="mb-3">
+    <label class="form-label">Photo</label>
+    <input type="file" name="photo" class="form-control" required />
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Type of Destruction</label>
+    <select name="type" class="form-select" required>
+      <option value="">-- Select --</option>
+      <option value="Deforestation">Deforestation</option>
+      <option value="Water Pollution">Water Pollution</option>
+      <option value="Air Pollution">Air Pollution</option>
+      <option value="Waste Dumping">Waste Dumping</option>
+      <option value="Other">Other</option>
+    </select>
+  </div>
+
+  <!-- Hidden fields for location -->
+  <input type="hidden" name="latitude" id="latitude" />
+  <input type="hidden" name="longitude" id="longitude" />
+
+  <button type="submit" class="btn btn-success">Submit Report</button>
+</form>
+
+<script>
+  document
+    .getElementById("reportForm")
+    .addEventListener("submit", function (e) {
+      if (navigator.geolocation) {
+        e.preventDefault(); // stop the form from submitting immediately
+        navigator.geolocation.getCurrentPosition(
+          function (position) {
+            document.getElementById("latitude").value =
+              position.coords.latitude;
+            document.getElementById("longitude").value =
+              position.coords.longitude;
+            e.target.submit(); // now submit the form
+          },
+          function (error) {
+            alert(
+              "Location access denied or unavailable. Please enable location in your browser."
+            );
+          }
+        );
+      } else {
+        alert("Geolocation is not supported by this browser.");
+      }
+    });
+</script>

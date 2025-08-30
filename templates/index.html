@@ -1,0 +1,41 @@
+{% extends "base.html" %} {% block title %}Submit Report{% endblock %} {% block
+content %}
+<h2 class="mb-4">Submit a Report</h2>
+
+<form
+  action="/submit"
+  method="post"
+  enctype="multipart/form-data"
+  class="card p-4 shadow-sm"
+>
+  <div class="mb-3">
+    <label class="form-label">Photo</label>
+    <input type="file" name="photo" class="form-control" required />
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Type of Destruction</label>
+    <select name="type" class="form-select" required>
+      <option value="">-- Select --</option>
+      <option value="Deforestation">Deforestation</option>
+      <option value="Water Pollution">Water Pollution</option>
+      <option value="Air Pollution">Air Pollution</option>
+      <option value="Waste Dumping">Waste Dumping</option>
+      <option value="Other">Other</option>
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Location</label>
+    <input
+      type="text"
+      name="location"
+      class="form-control"
+      placeholder="Enter location"
+      required
+    />
+  </div>
+
+  <button type="submit" class="btn btn-success">Submit Report</button>
+</form>
+{% endblock %}
