@@ -1,194 +1,199 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Eco Issue Reporter</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
-  <style>
-    body {
-      background: #0d1117;
-      color: #e6edf3;
-      font-family: "Poppins", sans-serif;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Eco Issue Reporter</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+      body {
+        background: #0d1117;
+        color: #e6edf3;
+        font-family: "Poppins", sans-serif;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+      }
 
-    .container {
-      width: 95%;
-      max-width: 500px;
-      margin-top: 20px;
-      background: rgba(20, 25, 34, 0.95);
-      border-radius: 15px;
-      padding: 20px;
-      box-shadow: 0 0 25px rgba(0, 255, 200, 0.2);
-      border: 1px solid rgba(0, 255, 200, 0.3);
-    }
+      .container {
+        width: 95%;
+        max-width: 500px;
+        margin-top: 20px;
+        background: rgba(20, 25, 34, 0.95);
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 0 25px rgba(0, 255, 200, 0.2);
+        border: 1px solid rgba(0, 255, 200, 0.3);
+      }
 
-    .title {
-      text-align: center;
-      font-size: 1.6rem;
-      font-weight: bold;
-      background: linear-gradient(90deg, #00e5ff, #00ff85, #00e5ff);
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 15px;
-    }
+      .title {
+        text-align: center;
+        font-size: 1.6rem;
+        font-weight: bold;
+        background: linear-gradient(90deg, #00e5ff, #00ff85, #00e5ff);
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 15px;
+      }
 
-    /* Credit Score Box on Top */
-    .credit-box {
-      margin-bottom: 20px;
-      padding: 15px;
-      border: 1px solid rgba(0,255,200,0.3);
-      border-radius: 12px;
-      background: #11161d;
-      text-align: center;
-      box-shadow: 0 0 15px rgba(0,255,200,0.2);
-    }
+      /* Credit Score Box on Top */
+      .credit-box {
+        margin-bottom: 20px;
+        padding: 15px;
+        border: 1px solid rgba(0, 255, 200, 0.3);
+        border-radius: 12px;
+        background: #11161d;
+        text-align: center;
+        box-shadow: 0 0 15px rgba(0, 255, 200, 0.2);
+      }
 
-    .credit-box h3 {
-      margin: 0 0 10px;
-      color: #00e5ff;
-      font-size: 1.2rem;
-    }
+      .credit-box h3 {
+        margin: 0 0 10px;
+        color: #00e5ff;
+        font-size: 1.2rem;
+      }
 
-    .credit-box button {
-      width: auto;
-      padding: 8px 15px;
-      font-size: 0.9rem;
-      border-radius: 8px;
-      border: none;
-      background: linear-gradient(90deg, #00e5ff, #00ff85);
-      font-weight: bold;
-      cursor: pointer;
-      transition: transform 0.2s ease;
-      color: #0d1117;
-    }
+      .credit-box button {
+        width: auto;
+        padding: 8px 15px;
+        font-size: 0.9rem;
+        border-radius: 8px;
+        border: none;
+        background: linear-gradient(90deg, #00e5ff, #00ff85);
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+        color: #0d1117;
+      }
 
-    .credit-box button:hover {
-      transform: scale(1.05);
-    }
+      .credit-box button:hover {
+        transform: scale(1.05);
+      }
 
-    label {
-      display: block;
-      margin: 15px 0 5px;
-      font-weight: 600;
-      color: #00ffc3;
-    }
+      label {
+        display: block;
+        margin: 15px 0 5px;
+        font-weight: 600;
+        color: #00ffc3;
+      }
 
-    select, input[type="file"], button {
-      width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
-      background: #161b22;
-      color: #e6edf3;
-      font-size: 1rem;
-      margin-bottom: 10px;
-      outline: none;
-      border: 1px solid rgba(0,255,200,0.3);
-    }
+      select,
+      input[type="file"],
+      button {
+        width: 100%;
+        padding: 10px;
+        border-radius: 8px;
+        border: none;
+        background: #161b22;
+        color: #e6edf3;
+        font-size: 1rem;
+        margin-bottom: 10px;
+        outline: none;
+        border: 1px solid rgba(0, 255, 200, 0.3);
+      }
 
-    button {
-      background: linear-gradient(90deg, #00e5ff, #00ff85);
-      font-weight: bold;
-      cursor: pointer;
-      transition: transform 0.2s ease;
-      color: #0d1117;
-    }
+      button {
+        background: linear-gradient(90deg, #00e5ff, #00ff85);
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.2s ease;
+        color: #0d1117;
+      }
 
-    button:hover {
-      transform: scale(1.05);
-    }
+      button:hover {
+        transform: scale(1.05);
+      }
 
-    #map {
-      height: 250px;
-      width: 100%;
-      border-radius: 12px;
-      margin-top: 10px;
-      border: 1px solid rgba(0,255,200,0.3);
-    }
-    a {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      color: #00ffcc;
-      text-decoration: none;
-      font-size: 14px;
-      z-index: 1000;
-      background: rgba(0, 0, 0, 0.5);
-      padding: 6px 10px;}
-  </style>
-</head>
-<body>
-  <!-- <a href="{{ url_for('admin_page') }}">Go to Admin Page</a> -->
+      #map {
+        height: 250px;
+        width: 100%;
+        border-radius: 12px;
+        margin-top: 10px;
+        border: 1px solid rgba(0, 255, 200, 0.3);
+      }
+      a {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        color: #00ffcc;
+        text-decoration: none;
+        font-size: 14px;
+        z-index: 1000;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 6px 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="title">Eco Issue Reporter</div>
 
-  <div class="container">
-    <div class="title">Eco Issue Reporter</div>
+      <!-- Credit score moved on top -->
+      <div class="credit-box">
+        <h3>Your Credits: <span id="credits">50</span></h3>
+        <button onclick="convertCredits()">Convert to ₹</button>
+        <p id="conversion-rate" style="display: none; margin-top: 10px">
+          1 Credit = ₹10 <br />
+          Total = ₹<span id="rupees">0</span>
+        </p>
+      </div>
 
-    <!-- Credit score moved on top -->
-    <div class="credit-box">
-      <h3>Your Credits: <span id="credits">50</span></h3>
-      <button onclick="convertCredits()">Convert to ₹</button>
-      <p id="conversion-rate" style="display:none; margin-top:10px;">
-        1 Credit = ₹10 <br/> Total = ₹<span id="rupees">0</span>
-      </p>
+      <form method="POST" action="/submit_report" enctype="multipart/form-data">
+        <label for="issue">Select Issue:</label>
+        <select id="issue" name="issue" required>
+          <option value="">-- Choose an Issue --</option>
+          <option value="garbage">Garbage Dump</option>
+          <option value="pollution">Air/Water Pollution</option>
+          <option value="deforestation">Deforestation</option>
+          <option value="other">Other</option>
+        </select>
+
+        <label for="photo">Upload Evidence (Photo):</label>
+        <input type="file" id="photo" name="photo" accept="image/*" required />
+
+        <label>Confirm Location:</label>
+        <div id="map"></div>
+
+        <input type="hidden" id="latitude" name="latitude" />
+        <input type="hidden" id="longitude" name="longitude" />
+
+        <button type="submit">Submit Report</button>
+      </form>
     </div>
 
-    <form method="POST" action="/submit_issue" enctype="multipart/form-data">
-      <label for="issue">Select Issue:</label>
-      <select id="issue" name="issue" required>
-        <option value="">-- Choose an Issue --</option>
-        <option value="garbage">Garbage Dump</option>
-        <option value="pollution">Air/Water Pollution</option>
-        <option value="deforestation">Deforestation</option>
-        <option value="other">Other</option>
-      </select>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+      // Initialize map
+      var map = L.map("map").setView([20.5937, 78.9629], 5);
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap contributors",
+      }).addTo(map);
 
-      <label for="photo">Upload Evidence (Photo):</label>
-      <input type="file" id="photo" name="photo" accept="image/*" required />
+      var marker;
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function (pos) {
+          var lat = pos.coords.latitude;
+          var lng = pos.coords.longitude;
+          document.getElementById("latitude").value = lat;
+          document.getElementById("longitude").value = lng;
+          map.setView([lat, lng], 15);
+          marker = L.marker([lat, lng])
+            .addTo(map)
+            .bindPopup("Your Location")
+            .openPopup();
+        });
+      }
 
-      <label>Confirm Location:</label>
-      <div id="map"></div>
-
-      <input type="hidden" id="latitude" name="latitude" />
-      <input type="hidden" id="longitude" name="longitude" />
-
-      <button type="submit">Submit Report</button>
-    </form>
-  </div>
-
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script>
-    // Initialize map
-    var map = L.map('map').setView([20.5937, 78.9629], 5);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
-
-    var marker;
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(function(pos) {
-        var lat = pos.coords.latitude;
-        var lng = pos.coords.longitude;
-        document.getElementById("latitude").value = lat;
-        document.getElementById("longitude").value = lng;
-        map.setView([lat, lng], 15);
-        marker = L.marker([lat, lng]).addTo(map).bindPopup("Your Location").openPopup();
-      });
-    }
-
-    // Credit Conversion
-    function convertCredits() {
-      let credits = parseInt(document.getElementById("credits").innerText);
-      let rupees = credits * 10; // Example: 1 credit = ₹10
-      document.getElementById("rupees").innerText = rupees;
-      document.getElementById("conversion-rate").style.display = "block";
-    }
-  </script>
-</body>
+      // Credit Conversion
+      function convertCredits() {
+        let credits = parseInt(document.getElementById("credits").innerText);
+        let rupees = credits * 10; // Example: 1 credit = ₹10
+        document.getElementById("rupees").innerText = rupees;
+        document.getElementById("conversion-rate").style.display = "block";
+      }
+    </script>
+  </body>
 </html>

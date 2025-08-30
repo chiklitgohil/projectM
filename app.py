@@ -13,7 +13,7 @@ reports = []
 os.makedirs("uploads", exist_ok=True)
 
 # 1. Initialize Firebase Admin SDK
-cred = credentials.Certificate("projectm-84c11-firebase-adminsdk-fbsvc-bfcbf9e50d.json.json")  # path to your key file
+cred = credentials.Certificate("projectm-84c11-firebase-adminsdk-fbsvc-bfcbf9e50d.json")  # path to your key file
 firebase_admin.initialize_app(cred)
 
 # 2. Create Firestore client
@@ -37,9 +37,6 @@ def report_page():
 @app.route('/admin')
 def admin_page():
     return render_template('dashboard.html')
-
-
-
 
 
 # 3. Route to handle report submission
