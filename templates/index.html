@@ -1,209 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Eco Issue Reporter</title>
-
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Rajdhani:wght@400;600&display=swap" rel="stylesheet">
-
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
   <style>
-    /* ====== Global Dark Futuristic Theme ====== */
-    a{
-      color: #00ffe0;
-      text-decoration: none;
-      font-weight: 600;
-      margin: 15px 0;
-      display: inline-block;
-    }
     body {
+      background: #0d1117;
+      color: #e6edf3;
+      font-family: "Poppins", sans-serif;
       margin: 0;
       padding: 0;
-      background: linear-gradient(135deg, #0a0a0a 0%, #111 100%);
-      font-family: 'Rajdhani', sans-serif;
-      color: #eaeaea;
       display: flex;
-      flex-direction: column;
-      align-items: center;
+      justify-content: center;
+      align-items: flex-start;
       min-height: 100vh;
     }
 
-    h1 {
-      margin: 25px 0;
-      font-size: 2.5rem;
-      font-family: 'Orbitron', sans-serif;
-      background: linear-gradient(90deg, #00ffea, #9d00ff, #00ff88);
-      /* -webkit-background-clip: text; */
-      -webkit-text-fill-color: transparent;
-      text-shadow: 0 0 15px rgba(0, 255, 234, 0.4);
+    .container {
+      width: 95%;
+      max-width: 500px;
+      margin-top: 20px;
+      background: rgba(20, 25, 34, 0.95);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 0 25px rgba(0, 255, 200, 0.2);
+      border: 1px solid rgba(0, 255, 200, 0.3);
     }
 
-    .container {
-      margin-top: 10px;
-      background: rgba(25, 25, 25, 0.85);
-      backdrop-filter: blur(12px);
-      padding: 25px;
-      border-radius: 20px;
-      box-shadow: 0 0 20px rgba(0, 255, 200, 0.2);
-      width: 90%;
-      max-width: 650px;
-      border: 1px solid rgba(0, 255, 200, 0.25);
-      animation: fadeIn 0.7s ease;
+    .title {
+      text-align: center;
+      font-size: 1.6rem;
+      font-weight: bold;
+      background: linear-gradient(90deg, #00e5ff, #00ff85, #00e5ff);
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 15px;
+    }
+
+    /* Credit Score Box on Top */
+    .credit-box {
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid rgba(0,255,200,0.3);
+      border-radius: 12px;
+      background: #11161d;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(0,255,200,0.2);
+    }
+
+    .credit-box h3 {
+      margin: 0 0 10px;
+      color: #00e5ff;
+      font-size: 1.2rem;
+    }
+
+    .credit-box button {
+      width: auto;
+      padding: 8px 15px;
+      font-size: 0.9rem;
+      border-radius: 8px;
+      border: none;
+      background: linear-gradient(90deg, #00e5ff, #00ff85);
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+      color: #0d1117;
+    }
+
+    .credit-box button:hover {
+      transform: scale(1.05);
     }
 
     label {
-      font-weight: 600;
       display: block;
-      margin-bottom: 6px;
-      font-size: 1rem;
-      color: #00ffe0;
-      letter-spacing: 1px;
+      margin: 15px 0 5px;
+      font-weight: 600;
+      color: #00ffc3;
     }
 
     select, input[type="file"], button {
       width: 100%;
-      margin-bottom: 18px;
-      padding: 12px;
-      border-radius: 10px;
+      padding: 10px;
+      border-radius: 8px;
       border: none;
+      background: #161b22;
+      color: #e6edf3;
       font-size: 1rem;
-      font-family: 'Rajdhani', sans-serif;
+      margin-bottom: 10px;
       outline: none;
-    }
-
-    select, input[type="file"] {
-      background: #1c1c1c;
-      color: #e0e0e0;
-      border: 1px solid rgba(0, 255, 234, 0.25);
-      transition: 0.3s;
-    }
-
-    select:hover, input[type="file"]:hover {
-      border-color: #00ffea;
-      box-shadow: 0 0 10px rgba(0, 255, 234, 0.2);
+      border: 1px solid rgba(0,255,200,0.3);
     }
 
     button {
-      background: linear-gradient(90deg, #00ff88, #00ffe0, #9d00ff);
-      color: #121212;
+      background: linear-gradient(90deg, #00e5ff, #00ff85);
       font-weight: bold;
       cursor: pointer;
-      transition: 0.3s ease;
-      border-radius: 12px;
-      letter-spacing: 1px;
+      transition: transform 0.2s ease;
+      color: #0d1117;
     }
 
     button:hover {
       transform: scale(1.05);
-      box-shadow: 0 0 20px rgba(0, 255, 234, 0.5);
     }
 
     #map {
-      height: 320px;
-      border-radius: 14px;
-      margin-top: 12px;
-      border: 1px solid rgba(0, 255, 234, 0.25);
-      box-shadow: inset 0 0 15px rgba(0, 255, 234, 0.2);
-    }
-
-    .response {
-      margin-top: 20px;
-      padding: 15px;
-      background: rgba(0, 255, 234, 0.05);
-      border-left: 4px solid #00ffe0;
+      height: 250px;
+      width: 100%;
       border-radius: 12px;
-      color: #00ffea;
-      font-size: 1rem;
-      display: none;
+      margin-top: 10px;
+      border: 1px solid rgba(0,255,200,0.3);
     }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    a {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      color: #00ffcc;
+      text-decoration: none;
+      font-size: 14px;
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 6px 10px;}
   </style>
 </head>
 <body>
-  <a href="{{ url_for('admin_page') }}">Go to Admin Page</a>
-
-  <h1>⚡ Eco Issue Reporter</h1>
+  <!-- <a href="{{ url_for('admin_page') }}">Go to Admin Page</a> -->
 
   <div class="container">
-    <form id="reportForm" enctype="multipart/form-data">
+    <div class="title">Eco Issue Reporter</div>
+
+    <!-- Credit score moved on top -->
+    <div class="credit-box">
+      <h3>Your Credits: <span id="credits">50</span></h3>
+      <button onclick="convertCredits()">Convert to ₹</button>
+      <p id="conversion-rate" style="display:none; margin-top:10px;">
+        1 Credit = ₹10 <br/> Total = ₹<span id="rupees">0</span>
+      </p>
+    </div>
+
+    <form method="POST" action="/submit_issue" enctype="multipart/form-data">
       <label for="issue">Select Issue:</label>
-      <select name="issue" id="issue" required>
+      <select id="issue" name="issue" required>
         <option value="">-- Choose an Issue --</option>
-        <option value="cutting">🌳 Tree Cutting</option>
-        <option value="dumping">🗑 Garbage Dumping</option>
-        <option value="pollution">🌫 Pollution</option>
-        <option value="illegal">⚠ Illegal Activity</option>
+        <option value="garbage">Garbage Dump</option>
+        <option value="pollution">Air/Water Pollution</option>
+        <option value="deforestation">Deforestation</option>
+        <option value="other">Other</option>
       </select>
 
       <label for="photo">Upload Evidence (Photo):</label>
-      <input type="file" name="photo" id="photo" accept="image/*" required>
-
-      <!-- Hidden fields for location -->
-      <input type="hidden" id="latitude" name="latitude">
-      <input type="hidden" id="longitude" name="longitude">
+      <input type="file" id="photo" name="photo" accept="image/*" required />
 
       <label>Confirm Location:</label>
       <div id="map"></div>
 
-      <button type="submit">🚀 Submit Report</button>
-    </form>
+      <input type="hidden" id="latitude" name="latitude" />
+      <input type="hidden" id="longitude" name="longitude" />
 
-    <div class="response" id="responseBox"></div>
+      <button type="submit">Submit Report</button>
+    </form>
   </div>
 
-  <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
   <script>
+    // Initialize map
     var map = L.map('map').setView([20.5937, 78.9629], 5);
-
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
     var marker;
-
-    // Get user location
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(function (position) {
-        var lat = position.coords.latitude;
-        var lon = position.coords.longitude;
-
+      navigator.geolocation.getCurrentPosition(function(pos) {
+        var lat = pos.coords.latitude;
+        var lng = pos.coords.longitude;
         document.getElementById("latitude").value = lat;
-        document.getElementById("longitude").value = lon;
-
-        map.setView([lat, lon], 15);
-        marker = L.marker([lat, lon]).addTo(map)
-          .bindPopup("📍 Your Location").openPopup();
+        document.getElementById("longitude").value = lng;
+        map.setView([lat, lng], 15);
+        marker = L.marker([lat, lng]).addTo(map).bindPopup("Your Location").openPopup();
       });
     }
 
-    // Handle form submit
-    document.getElementById("reportForm").addEventListener("submit", async function (e) {
-      e.preventDefault();
-      const formData = new FormData(this);
-
-      const res = await fetch("/report", {
-        method: "POST",
-        body: formData
-      });
-
-      const data = await res.json();
-      const box = document.getElementById("responseBox");
-      box.style.display = "block";
-      box.innerHTML = `<b>${data.message}</b><br>
-        <span>⚡ Issue: ${data.issue}</span><br>
-        <span>🎯 Points: ${data.points_awarded}</span><br>
-        <span>📍 Location: ${data.latitude}, ${data.longitude}</span>`;
-    });
+    // Credit Conversion
+    function convertCredits() {
+      let credits = parseInt(document.getElementById("credits").innerText);
+      let rupees = credits * 10; // Example: 1 credit = ₹10
+      document.getElementById("rupees").innerText = rupees;
+      document.getElementById("conversion-rate").style.display = "block";
+    }
   </script>
 </body>
 </html>
