@@ -40,22 +40,23 @@ def admin_page():
 
 
 # 3. Route to handle report submission
-@app.route('/submit_report', methods=['POST'])
+@app.route("/submit_report", methods=["POST"])
 def submit_report():
-    try:
-        data = request.json  # Expecting JSON from frontend
-        report = {
-            "photo_url": data.get("photo_url"),
-            "label": data.get("label"),
-            "location": data.get("location"),
-            "timestamp": firestore.SERVER_TIMESTAMP
-        }
-        # Store report in Firestore
-        db.collection("reports").add(report)
+    data = request.get_json()
+    photo_url = data.get("photoUrl")
+    label = data.get("label")
+    location = data.get("location")
 
-        return jsonify({"status": "success", "message": "Report submitted!"}), 200
-    except Exception as e:
-        return jsonify({"status": "error", "message": str(e)}), 500
+    report_ref = db.collection("reports").add({
+        "photoUrl": photo_url,
+        "label": label,
+        "location": location,
+        "status": "pending"
+    })
+
+    return jsonify({"success": True, "id": report_ref[1].id}), 200
+
+
 
 
 if __name__ == '__main__':

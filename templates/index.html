@@ -141,7 +141,7 @@
         </p>
       </div>
 
-      <form method="POST" action="/submit_report" enctype="multipart/form-data">
+      <form id="reportForm">
         <label for="issue">Select Issue:</label>
         <select id="issue" name="issue" required>
           <option value="">-- Choose an Issue --</option>
@@ -165,35 +165,6 @@
     </div>
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-    <script>
-      // Initialize map
-      var map = L.map("map").setView([20.5937, 78.9629], 5);
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "© OpenStreetMap contributors",
-      }).addTo(map);
-
-      var marker;
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function (pos) {
-          var lat = pos.coords.latitude;
-          var lng = pos.coords.longitude;
-          document.getElementById("latitude").value = lat;
-          document.getElementById("longitude").value = lng;
-          map.setView([lat, lng], 15);
-          marker = L.marker([lat, lng])
-            .addTo(map)
-            .bindPopup("Your Location")
-            .openPopup();
-        });
-      }
-
-      // Credit Conversion
-      function convertCredits() {
-        let credits = parseInt(document.getElementById("credits").innerText);
-        let rupees = credits * 10; // Example: 1 credit = ₹10
-        document.getElementById("rupees").innerText = rupees;
-        document.getElementById("conversion-rate").style.display = "block";
-      }
-    </script>
+    <script src="/static/js/script.js"></script>
   </body>
 </html>
