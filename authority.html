@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoApp - Authority</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 0;
+      background: #eef2f3;
+    }
+    .container {
+      max-width: 500px;
+      margin: auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      margin-top: 20px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    h2 { text-align: center; color: #2c3e50; }
+    .report {
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 5px;
+    }
+    button {
+      background: #2980b9;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      margin-top: 5px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover { background: #1f5f8b; }
+    #credits { font-weight: bold; color: green; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Authority Dashboard</h2>
+    <div id="reports"></div>
+    <p id="credits">Credits: 0</p>
+  </div>
+
+  <script>
+    async function loadReports() {
+      const res = await fetch('/get_reports');
+      const reports = await res.json();
+      const container = document.getElementById('reports');
+      container.innerHTML = '';
+      reports.forEach(r => {
+        const div = document.createElement('div');
+        div.className = 'report';
+        div.innerHTML = `
+          <p><strong>Issue:</strong> ${r.issue}</p>
+          <p>📍 ${r.latitude}, ${r.longitude}</p>
+          ${r.photo ? `<img src="uploads/${r.photo}" width="100%">` : ''}
+          <button onclick="grantCredits()">Grant Credits</button>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    async function grantCredits() {
+      const res = await fetch('/grant_credits', { method: 'POST' });
+      const data = await res.json();
+      document.getElementById('credits').textContent = "Credits: " + data.credits;
+    }
+
+    // auto refresh every 5s
+    setInterval(loadReports, 5000);
+    loadReports();
+  </script>
+</body>
+</html>
